@@ -1,0 +1,202 @@
+{
+  "graphs": [
+    {
+      "id": "g1",
+      "name": "示例：电商系统架构",
+      "nodes": [
+        {
+          "id": "web",
+          "name": "商城前端 H5",
+          "type": "system",
+          "server": "示例环境",
+          "ip": "shop.example.com",
+          "url": "https://shop.example.com",
+          "owner": "前端组",
+          "desc": "面向用户的商城前端，浏览器访问入口",
+          "x": 0,
+          "y": -260
+        },
+        {
+          "id": "gateway",
+          "name": "网关 / Nginx",
+          "type": "proxy",
+          "server": "示例环境",
+          "ip": "10.0.0.10",
+          "url": "",
+          "owner": "运维组",
+          "desc": "反向代理与负载均衡，统一入口",
+          "x": 0,
+          "y": -120
+        },
+        {
+          "id": "order-svc",
+          "name": "订单服务",
+          "type": "service",
+          "server": "示例环境",
+          "ip": "10.0.0.21",
+          "url": "",
+          "owner": "后端组",
+          "desc": "订单下单、拆单、状态流转。内部细节点「打开内部架构」",
+          "x": -140,
+          "y": 60,
+          "subArch": "g2"
+        },
+        {
+          "id": "goods-svc",
+          "name": "商品服务",
+          "type": "service",
+          "server": "示例环境",
+          "ip": "10.0.0.22",
+          "url": "",
+          "owner": "后端组",
+          "desc": "商品、库存、价格查询",
+          "x": 140,
+          "y": 60
+        },
+        {
+          "id": "pay-svc",
+          "name": "支付服务",
+          "type": "service",
+          "server": "示例环境",
+          "ip": "10.0.0.23",
+          "url": "",
+          "owner": "后端组",
+          "desc": "对接第三方支付渠道，发起支付与回调",
+          "x": -140,
+          "y": 200
+        },
+        {
+          "id": "order-db",
+          "name": "订单数据库",
+          "type": "db",
+          "server": "示例环境",
+          "ip": "10.0.0.31",
+          "url": "",
+          "owner": "DBA",
+          "desc": "MySQL，订单主库",
+          "x": -320,
+          "y": 60
+        },
+        {
+          "id": "goods-db",
+          "name": "商品数据库",
+          "type": "db",
+          "server": "示例环境",
+          "ip": "10.0.0.32",
+          "url": "",
+          "owner": "DBA",
+          "desc": "MySQL，商品/库存库",
+          "x": 320,
+          "y": 60
+        },
+        {
+          "id": "cache",
+          "name": "缓存 Redis",
+          "type": "db",
+          "server": "示例环境",
+          "ip": "10.0.0.33",
+          "url": "",
+          "owner": "运维组",
+          "desc": "热点数据缓存",
+          "x": 0,
+          "y": 200
+        },
+        {
+          "id": "mq",
+          "name": "消息队列 Kafka",
+          "type": "tool",
+          "server": "示例环境",
+          "ip": "10.0.0.34",
+          "url": "",
+          "owner": "运维组",
+          "desc": "订单/支付事件总线",
+          "x": 170,
+          "y": 320
+        },
+        {
+          "id": "monitor",
+          "name": "监控平台",
+          "type": "tool",
+          "server": "示例环境",
+          "ip": "10.0.0.99",
+          "url": "https://monitor.example.com",
+          "owner": "运维组",
+          "desc": "Prometheus + Grafana，采集指标与告警",
+          "x": -340,
+          "y": -120
+        },
+        {
+          "id": "appserver",
+          "name": "应用服务器",
+          "type": "server",
+          "server": "示例环境",
+          "ip": "10.0.0.11",
+          "url": "",
+          "owner": "运维组",
+          "desc": "承载各微服务的物理机/虚机",
+          "x": -520,
+          "y": 0
+        }
+      ],
+      "edges": [
+        { "id": "e1", "from": "web", "to": "gateway", "label": "HTTPS", "desc": "浏览器访问入口" },
+        { "id": "e2", "from": "gateway", "to": "order-svc", "label": "转发", "desc": "" },
+        { "id": "e3", "from": "gateway", "to": "goods-svc", "label": "转发", "desc": "" },
+        { "id": "e4", "from": "order-svc", "to": "order-db", "label": "读写", "desc": "" },
+        { "id": "e5", "from": "goods-svc", "to": "goods-db", "label": "读写", "desc": "" },
+        { "id": "e6", "from": "order-svc", "to": "pay-svc", "label": "发起支付", "desc": "" },
+        { "id": "e7", "from": "pay-svc", "to": "order-svc", "label": "支付回调", "desc": "双向关系自动弯成两条相反的弧线" },
+        { "id": "e8", "from": "order-svc", "to": "cache", "label": "缓存", "desc": "" },
+        { "id": "e9", "from": "order-svc", "to": "mq", "label": "发布事件", "desc": "" },
+        { "id": "e10", "from": "pay-svc", "to": "mq", "label": "发布/消费", "desc": "" },
+        { "id": "e11", "from": "appserver", "to": "order-svc", "label": "部署", "desc": "" },
+        { "id": "e12", "from": "appserver", "to": "goods-svc", "label": "部署", "desc": "" },
+        { "id": "e13", "from": "appserver", "to": "pay-svc", "label": "部署", "desc": "" },
+        { "id": "e14", "from": "monitor", "to": "gateway", "label": "采集指标", "desc": "" }
+      ]
+    },
+    {
+      "id": "g2",
+      "name": "示例：订单服务内部",
+      "nodes": [
+        { "id": "order-api", "name": "接口层", "type": "service", "server": "示例环境", "ip": "10.0.0.21", "url": "", "owner": "后端组", "desc": "对外 HTTP API 与参数校验", "x": 0, "y": 0 },
+        { "id": "order-core", "name": "领域逻辑", "type": "service", "server": "示例环境", "ip": "10.0.0.21", "url": "", "owner": "后端组", "desc": "订单领域核心逻辑", "x": 0, "y": 120 },
+        { "id": "order-worker", "name": "异步任务", "type": "service", "server": "示例环境", "ip": "10.0.0.21", "url": "", "owner": "后端组", "desc": "消费 MQ、定时扫描超时订单", "x": 180, "y": 120 },
+        { "id": "order-detail", "name": "订单本地库", "type": "db", "server": "示例环境", "ip": "10.0.0.31", "url": "", "owner": "DBA", "desc": "MySQL，订单明细", "x": 0, "y": 240 },
+        { "id": "order-cache", "name": "订单缓存", "type": "db", "server": "示例环境", "ip": "10.0.0.33", "url": "", "owner": "运维组", "desc": "Redis，订单热点缓存", "x": -180, "y": 120 }
+      ],
+      "edges": [
+        { "id": "oe1", "from": "order-api", "to": "order-core", "label": "调用", "desc": "" },
+        { "id": "oe2", "from": "order-worker", "to": "order-core", "label": "调用", "desc": "" },
+        { "id": "oe3", "from": "order-core", "to": "order-detail", "label": "读写", "desc": "" },
+        { "id": "oe4", "from": "order-core", "to": "order-cache", "label": "缓存", "desc": "" }
+      ]
+    },
+    {
+      "id": "g3",
+      "name": "示例：基础设施层",
+      "nodes": [
+        { "id": "app1", "name": "应用服务器 A", "type": "server", "server": "示例环境", "ip": "10.0.0.11", "url": "", "owner": "运维组", "desc": "业务集群 A", "x": -220, "y": 0 },
+        { "id": "app2", "name": "应用服务器 B", "type": "server", "server": "示例环境", "ip": "10.0.0.12", "url": "", "owner": "运维组", "desc": "业务集群 B", "x": 220, "y": 0 },
+        { "id": "mysql", "name": "主库 MySQL", "type": "db", "server": "示例环境", "ip": "10.0.0.31", "url": "", "owner": "DBA", "desc": "核心数据库", "x": 0, "y": 140 },
+        { "id": "redis", "name": "缓存 Redis", "type": "db", "server": "示例环境", "ip": "10.0.0.33", "url": "", "owner": "运维组", "desc": "缓存集群", "x": 0, "y": -140 },
+        { "id": "kafka", "name": "消息队列 Kafka", "type": "tool", "server": "示例环境", "ip": "10.0.0.34", "url": "", "owner": "运维组", "desc": "事件总线", "x": 0, "y": 260 },
+        { "id": "nginx", "name": "反向代理 Nginx", "type": "proxy", "server": "示例环境", "ip": "10.0.0.10", "url": "", "owner": "运维组", "desc": "统一入口", "x": 0, "y": -260 },
+        { "id": "grafana", "name": "监控 Grafana", "type": "tool", "server": "示例环境", "ip": "10.0.0.99", "url": "https://monitor.example.com", "owner": "运维组", "desc": "可视化监控", "x": 340, "y": 140 }
+      ],
+      "edges": [
+        { "id": "ie1", "from": "nginx", "to": "app1", "label": "负载均衡", "desc": "" },
+        { "id": "ie2", "from": "nginx", "to": "app2", "label": "负载均衡", "desc": "" },
+        { "id": "ie3", "from": "app1", "to": "mysql", "label": "读写", "desc": "" },
+        { "id": "ie4", "from": "app2", "to": "mysql", "label": "读写", "desc": "" },
+        { "id": "ie5", "from": "app1", "to": "redis", "label": "缓存", "desc": "" },
+        { "id": "ie6", "from": "app2", "to": "redis", "label": "缓存", "desc": "" },
+        { "id": "ie7", "from": "app1", "to": "kafka", "label": "发布", "desc": "" },
+        { "id": "ie8", "from": "app2", "to": "kafka", "label": "发布", "desc": "" },
+        { "id": "ie9", "from": "grafana", "to": "app1", "label": "采集", "desc": "" },
+        { "id": "ie10", "from": "grafana", "to": "app2", "label": "采集", "desc": "" }
+      ]
+    }
+  ],
+  "active": "g1"
+}
